@@ -76,7 +76,13 @@ router.post('/login', async (req, res, next) => {
 
         const recoveredData = jwt.verify(token, process.env.JWT_SECRET)
         recoveredData;
-        res.send({ message: "you're logged in!", token, user});
+        res.send({ 
+          message: "you're logged in!", 
+          token: token, 
+          user: {
+            id: user.id,
+            username: username
+          }});
       } 
     } catch(error) {
       console.log(error);
@@ -85,10 +91,7 @@ router.post('/login', async (req, res, next) => {
   });
 
 // GET /api/users/me
-router.get('/me', async (req, res, next) => {
-    
 
-  });
 
 // GET /api/users/:username/routines
 

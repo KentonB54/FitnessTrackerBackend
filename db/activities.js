@@ -55,9 +55,9 @@ async function getActivityByName(name) {
   return activity;
   } catch (error) {
   console.log('error getting activity by name', error);
-  }
+  } 
 }
-
+ 
 async function attachActivitiesToRoutines(routines) {
   const routinesById = [...routines];
   const paramList = routines.map ((r, index) => `$${index+1}`).join(', ')
