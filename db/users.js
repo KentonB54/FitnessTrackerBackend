@@ -16,10 +16,10 @@ const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
       ON CONFLICT (username) DO NOTHING 
       RETURNING *;
     `, [username, hashedPassword]);
-  
+    delete user.password;
     return user;
   } catch (error) {
-    console.error("error creating user", error)
+    console.log("error creating user", error)
   }
 }
 
@@ -37,7 +37,7 @@ async function getUser({ username, password }) {
             return null;
         }
   } catch (error) {
-    console.error('trouble with getUser', error)
+    console.log('trouble with getUser', error)
   }
 }
 
@@ -52,12 +52,13 @@ async function getUserById(userId) {
     if (!user) {
       return null
     }
+    delete user.password;
     return user;
   } catch (error) {
-    console.error('error getting user by ID');
+    console.log('error getting user by ID'), error;
   }
 }
-
+ 
 async function getUserByUsername(userName) {
   try{ 
   const { rows: [ user ] } = await client.query(`
@@ -68,7 +69,7 @@ async function getUserByUsername(userName) {
 
   return user;
   } catch (error) {
-  console.error('error getting user by username', error);
+  console.log('error getting user by username', error);
   }
 }
 

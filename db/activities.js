@@ -9,11 +9,11 @@ async function createActivity({ name, description }) {
     VALUES ($1, $2)
     ON CONFLICT (name) DO NOTHING
     RETURNING *
-    `, [name.toLowerCase(), description]);
+    `, [name, description]);
 
     return activity
   } catch (error) {
-    console.error('error creating activities in activities.js', error)
+    console.log('error creating activities in activities.js', error)
   }
 }
  
@@ -26,7 +26,7 @@ async function getAllActivities() {
     `);
     return activities
   } catch (error) {
-    console.error('error with getting all activities', error)
+    console.log('error with getting all activities', error)
   }
 }
 
@@ -40,7 +40,7 @@ async function getActivityById(id) {
 
     return activity;
   } catch (error) {
-    console.error('error getting activity by id', error);
+    console.log('error getting activity by id', error);
   }
 }
 
@@ -54,7 +54,7 @@ async function getActivityByName(name) {
   
   return activity;
   } catch (error) {
-  console.error('error getting activity by name', error);
+  console.log('error getting activity by name', error);
   }
 }
 
@@ -81,7 +81,7 @@ async function attachActivitiesToRoutines(routines) {
       }
       return routinesById;
     } catch(error){
-      console.error("error with attachActivitiesToRoutines", error)
+      console.log("error with attachActivitiesToRoutines", error)
     }
 }
 
@@ -105,9 +105,9 @@ async function updateActivity({ id, ...fields }) {
   
       return activity;
     } catch (error) {
-      console.error('error with updating activity', error);
+      console.log('error with updating activity', error);
     }
-  }
+  }  
 
 
 module.exports = {

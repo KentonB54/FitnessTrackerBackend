@@ -24,7 +24,7 @@ async function dropTables() {
   throw error;
   }
 }
-
+ 
 
 async function createTables() {
   try {

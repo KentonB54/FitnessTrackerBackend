@@ -5,7 +5,7 @@ async function addActivityToRoutine({
   activityId,
   count,
   duration,
-}) {
+}) { 
   try {
     const { rows: [routine_activity] } = await client.query(`
     INSERT INTO routine_activities ("routineId", "activityId", count, duration)
@@ -16,7 +16,7 @@ async function addActivityToRoutine({
 
     return routine_activity
   } catch (error) {
-    console.error('error with addActivityToRoutine', error)
+    console.log('error with addActivityToRoutine', error)
   }
 }
 
@@ -29,13 +29,13 @@ async function getRoutineActivityById(id) {
     `);
     return routineActivity;
   } catch (error) {
-    console.error('error getting routineActivity by id', error);
+    console.log('error getting routineActivity by id', error);
   }
 }
 
 async function getRoutineActivitiesByRoutine({ id }) {
   try {
-    const { rows: [ routineActivitiesByRoutine ]} = await client.query(`
+    const { rows: routineActivitiesByRoutine} = await client.query(`
     SELECT *
     FROM routine_activities
     WHERE "routineId"= $1
@@ -43,7 +43,7 @@ async function getRoutineActivitiesByRoutine({ id }) {
 
     return routineActivitiesByRoutine
   } catch (error) {
-    console.error('error with getRoutineActivitiesByRoutine', error)
+    console.log('error with getRoutineActivitiesByRoutine', error)
   }
 }
 
@@ -66,38 +66,37 @@ async function updateRoutineActivity({ id, ...fields }) {
   
       return updateRoutineActivities;
     } catch (error) {
-      console.error('error with updating routine_activities', error);
+      console.log('error with updating routine_activities', error);
     }
 }
 
 async function destroyRoutineActivity(id) {
   try {
-    const { rows: destroyRoutineActivity } = await client.query(`
+    const { rows: [destroyRoutineActivity] } = await client.query(`
     DELETE FROM routine_activities
     WHERE id=$1
+    RETURNING *;
     `, [ id ]);
 
-    return destroyRoutineActivity > 0
+    return destroyRoutineActivity
   } catch (error) {
     console.log('error with destroying routine_activity', error)
-    return false;
   }
 }
 
 async function canEditRoutineActivity(routineActivityId, userId) {
   try {
-    const { rows: canEditRoutineActivity } = await client.query(`
-    SELECT routines."creatorId"
-    FROM routines
-    JOIN routine_activities
-    ON routines.id = routine_activities."routineId"
-    WHERE routine_activities.id = $1
-    `, [ routineActivityId ]);
+    const { rows: [canEditRoutineActivity] } = await client.query(`
+    SELECT *
+    FROM routine_activities
+    JOIN routines ON routine_activities."routineId" = routines.id
+    WHERE routine_activities.id = $1 
+    AND "creatorId" = $2;
+    `, [ routineActivityId, userId ]);
 
-    return canEditRoutineActivity === userId
+    return canEditRoutineActivity 
   } catch (error) {
-    console.error('error with canEditRoutineActivity', error)
-    return false;
+    console.log('error with canEditRoutineActivity', error)
   }
 }
 

@@ -4,18 +4,15 @@ const app = express()
 const morgan = require('morgan');
 app.use(morgan('dev'));
 app.use(express.json())
+const cors = require("cors");
+app.use(cors());
 
-
-const client = require("./db/client")
-
-client.connect();
+// Setup your Middleware and API Router here
 
 const apiRouter = require('./api');
 app.use('/api', apiRouter);
 
-// Setup your Middleware and API Router here
-
+const client = require("./db/client")
+client.connect();
 
 module.exports = app;
-
-
