@@ -83,7 +83,7 @@ async function destroyRoutineActivity(id) {
     console.log('error with destroying routine_activity', error)
   }
 }
-
+ 
 async function canEditRoutineActivity(routineActivityId, userId) {
   try {
     const { rows: [canEditRoutineActivity] } = await client.query(`

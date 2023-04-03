@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = process.env;
+
 
 // GET /api/health
 router.get('/health', async (req, res,) => {

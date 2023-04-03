@@ -1,10 +1,16 @@
 /* eslint-disable no-useless-catch */
 const express = require("express");
 const router = express.Router();
-const { createUser, getUserByUsername, getUser } = require('../db');
-const bcrypt = require("bcrypt");
+const { 
+  createUser, 
+  getUserByUsername, 
+  getUserById, 
+  getPublicRoutinesByUser,
+  getAllRoutinesByUser
+ } = require('../db');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
+
 
 // POST /api/users/register
 router.post("/register", async (req, res, next) => {
@@ -91,8 +97,68 @@ router.post('/login', async (req, res, next) => {
   });
 
 // GET /api/users/me
+router.get("/me", async (req, res, next) => {
+  const authHeader = req.headers.authorization
 
+  if (!authHeader) {
+    res.status(401).send({
+      error: "this is an error for unauthorization",
+      message: "You must be logged in to perform this action",
+      name: "Log in for access"
+    })
+  } else {
+    const token = authHeader.split(" ")[1]
 
-// GET /api/users/:username/routines
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET)
+      const userId = decoded.id
+      const user = await getUserById(userId)
 
+      if (!user) {
+        res.send({
+          name: "user not logged in error",
+          message: "User not Found."
+        })
+      }
+
+      res.send({
+        id: user.id,
+        username: user.username
+      })
+    } catch ({ name, message }) {
+      next({ name, message })
+    }
+  } 
+})
+
+//GET /users/:username/routines
+router.get("/:username/routines", async (req, res, next) => {
+  const { username } = req.params;
+  let routines
+  
+  try {
+    const publicRoutines = await getPublicRoutinesByUser({ username });
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      routines = publicRoutines;
+    } else {
+      const token = authHeader.split(" ")[1];
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const userId = decoded.id;
+      const user = await getUserById(userId);
+      
+      if (user.username !== username) {
+        routines = publicRoutines;
+      } else {
+        const userRoutines = await getAllRoutinesByUser({ username });
+        routines = publicRoutines && userRoutines;
+      }
+    }
+    
+    res.send(routines);
+  } catch ({ name, message }) {
+    next({ name, message });
+  } 
+});
 module.exports = router;
