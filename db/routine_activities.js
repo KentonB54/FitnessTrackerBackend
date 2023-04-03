@@ -93,8 +93,7 @@ async function canEditRoutineActivity(routineActivityId, userId) {
     WHERE routine_activities.id = $1 
     AND "creatorId" = $2;
     `, [ routineActivityId, userId ]);
-
-    return canEditRoutineActivity 
+   canEditRoutineActivity ? true: false
   } catch (error) {
     console.log('error with canEditRoutineActivity', error)
   }

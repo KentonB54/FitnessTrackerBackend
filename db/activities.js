@@ -20,7 +20,7 @@ async function createActivity({ name, description }) {
 async function getAllActivities() {
   // select and return an array of all activities
   try {
-    const { rows: activities } = await client.query(`
+    const { rows: [...activities] } = await client.query(`
     SELECT *
     FROM activities;
     `);
@@ -102,7 +102,7 @@ async function updateActivity({ id, ...fields }) {
         WHERE id=${ id }
         RETURNING *;
       `, Object.values(fields));
-  
+      
       return activity;
     } catch (error) {
       console.log('error with updating activity', error);

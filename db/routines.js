@@ -114,6 +114,7 @@ async function getPublicRoutinesByActivity({ id }) {
     return attachActivitiesToRoutines(publicRoutinesByActivity)
   } catch (error) {
     console.log('error with getPublicRoutinesByActivity', error)
+    return []
   }
 }
 
