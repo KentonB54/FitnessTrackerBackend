@@ -60,7 +60,6 @@ router.post("/", async (req, res, next) => {
         })
     } else {
         await createActivity({name, description})
-        console.log('create', name)
         res.send({
             description: description,
             name: name,
@@ -80,13 +79,16 @@ router.patch("/:activityId", async (req, res, next) => {
     try {
         const verifyActivity = await getActivityById(activityId);
         const activityName = await getActivityByName(name)
+        const authHeader = req.headers.authorization
 
-        if (!verifyActivity) {
+        if (!authHeader) {
+            res.send({message:"login to use this action"})
+         } else if (!verifyActivity) {
             res.status(404).send({ 
                 error: "anyString error blah blah",
                 message: `Activity ${activityId} not found`,
                 name: "any strrang" });
-        } else if (activityName) {
+        } else if (activityName && activityId !== activityName.id) {
             res.status(404).send({ 
                 error: "anyString error blah blah",
                 message: `An activity with name ${activityName.name} already exists`,

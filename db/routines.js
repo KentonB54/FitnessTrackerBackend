@@ -16,7 +16,7 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
 async function getRoutineById(id) {
   try {
     const { rows: [ routine ] } = await client.query(`
-      SELECT id
+      SELECT *
       FROM routines
       WHERE id=${ id }
     `);
@@ -144,18 +144,18 @@ async function updateRoutine({ id, ...fields }) {
 
 async function destroyRoutine(id) {
   try {
-    const { rows: [destroyRoutine] } = await client.query(`
-    WITH deleted_routine_activities AS (
-      DELETE FROM routine_activities
-      WHERE "routineId" = $1
-      RETURNING *
-    )
+    await client.query(`
+    DELETE FROM routine_activities
+    WHERE "routineId" = $1
+    RETURNING *
+    `, [id]);
+    const { rows: [routine] } = await client.query(`
     DELETE FROM routines
-    WHERE id = $1
-    RETURNING *;
-    `, [ id ]);
+    WHERE id=$1
+    RETURNING *
+    `, [id]);
 
-    return destroyRoutine
+    return routine
   } catch (error) {
     console.log('error with destroying routine', error)
   }

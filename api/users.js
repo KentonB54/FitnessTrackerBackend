@@ -145,14 +145,11 @@ router.get("/:username/routines", async (req, res, next) => {
     } else {
       const token = authHeader.split(" ")[1];
       const decoded = jwt.verify(token, JWT_SECRET);
-      const userId = decoded.id;
-      const user = await getUserById(userId);
-      
-      if (user.username !== username) {
+      if (decoded.username !== username) {
         routines = publicRoutines;
       } else {
         const userRoutines = await getAllRoutinesByUser({ username });
-        routines = publicRoutines && userRoutines;
+        routines = userRoutines;
       }
     }
     

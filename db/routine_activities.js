@@ -93,9 +93,22 @@ async function canEditRoutineActivity(routineActivityId, userId) {
     WHERE routine_activities.id = $1 
     AND "creatorId" = $2;
     `, [ routineActivityId, userId ]);
-   canEditRoutineActivity ? true: false
+   return canEditRoutineActivity
   } catch (error) {
     console.log('error with canEditRoutineActivity', error)
+  }
+}
+
+async function getActivityByRoutineAndActivityIds(routineId, activityId) {
+  try {
+  const {rows: Ids } = await client.query(`
+  SELECT *
+  FROM routine_activities
+  WHERE "routineId"=$1
+  AND "activityId"=$2`, [routineId, activityId])
+  return Ids
+  } catch (error) {
+    console.log(error)
   }
 }
 
@@ -106,4 +119,5 @@ module.exports = {
   updateRoutineActivity,
   destroyRoutineActivity,
   canEditRoutineActivity,
+  getActivityByRoutineAndActivityIds
 };
