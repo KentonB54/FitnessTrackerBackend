@@ -3,7 +3,8 @@ const {
     updateRoutineActivity,
     destroyRoutineActivity,
     getRoutineById,
-    getUserById } = require('../db');
+    getUserById, 
+    getRoutineActivityById} = require('../db');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
 const router = express.Router();
@@ -14,7 +15,8 @@ router.patch("/:routineActivityId", async (req, res, next) => {
     const { routineActivityId } = req.params;
     const { ...fields } = req.body;
     
-    const routine = await getRoutineById(routineActivityId);
+    const routineActivity = await getRoutineActivityById(routineActivityId)
+    const routine = await getRoutineById(routineActivity.routineId);
     
     try {
       if (!authHeader) {
@@ -28,7 +30,7 @@ router.patch("/:routineActivityId", async (req, res, next) => {
         const decoded = jwt.verify(token, JWT_SECRET);
         const userId = decoded.id;
         const user = await getUserById(userId);
-        
+
         if (routine.creatorId !== user.id) {
           res.status(403).send({
             error: "Update error",
@@ -38,7 +40,7 @@ router.patch("/:routineActivityId", async (req, res, next) => {
         } else {
           const newRoutineActivity = await updateRoutineActivity({ id: routineActivityId, ...fields });
           res.send(newRoutineActivity);
-        }
+        } 
       }
     } catch ({ name, description }) {
       next({ name, description });
@@ -50,8 +52,8 @@ router.delete("/:routineActivityId", async (req, res, next) => {
     const authHeader = req.headers.authorization;
     const { routineActivityId } = req.params;
 
-    const routine = await getRoutineById(routineActivityId);
-    
+    const routineActivity = await getRoutineActivityById(routineActivityId)
+    const routine = await getRoutineById(routineActivity.routineId); 
     try {
       if (!authHeader) {
         res.send({
@@ -64,7 +66,7 @@ router.delete("/:routineActivityId", async (req, res, next) => {
         const decoded = jwt.verify(token, JWT_SECRET);
         const userId = decoded.id;
         const user = await getUserById(userId);
-        
+
         if (routine.creatorId !== user.id) {
           res.status(403).send({
             error: "Update error",

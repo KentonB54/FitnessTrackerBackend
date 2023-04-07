@@ -51,7 +51,7 @@ router.post("/", async (req, res, next) => {
     const activity = await getActivityByName(name)
 
      if (!authHeader) {
-        res.send({message:"login to use this action"})
+        res.status(403).send({message:"login to use this action"})
      } else if (activity) {
         res.send({
             error: "Activity name already used",
